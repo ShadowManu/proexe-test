@@ -30,6 +30,14 @@ export const updateOne = createAsyncThunk(
   }
 );
 
+export const removeOne = createAsyncThunk(
+  `${SLICE_NAME}/delete`,
+  async (id: number) => {
+    await userAPI.removeOne(id);
+    return id;
+  }
+);
+
 export const adapter = createEntityAdapter<User>({
   selectId: (user) => user.id ?? user.email,
   sortComparer: false,
@@ -52,8 +60,11 @@ export const slice = createSlice({
           id: action.payload.id!,
           changes: action.payload,
         });
+      })
+      .addCase(removeOne.fulfilled, (state, action) => {
+        return adapter.removeOne(state, action.payload);
       });
   },
 });
 
-export const actions = { fetchAll, addOne, updateOne };
+export const actions = { fetchAll, addOne, updateOne, removeOne };

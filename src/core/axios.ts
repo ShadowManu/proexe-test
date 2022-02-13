@@ -15,4 +15,7 @@ export const userAPI = {
   updateOne(id: number, user: User) {
     return axios.patch<User>(`${USERS_URL}/${id}`, user);
   },
+  removeOne(id: number) {
+    return axios.delete(`${USERS_URL}/${id}`);
+  },
 };

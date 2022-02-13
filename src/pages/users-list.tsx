@@ -1,10 +1,11 @@
 import { isEmpty } from "lodash";
-import { Button, Card, Col, Row, Table } from "react-bootstrap";
+import { Alert, Button, Card, Col, Row, Table } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import styled from "styled-components/macro";
 
 import { useAppSelector } from "../core/hooks";
 import { selectors } from "../core/store";
+import DeleteButton from "./delete-button";
 
 const StyledRow = styled(Row)`
   align-items: center;
@@ -56,13 +57,15 @@ const UsersList = () => {
                     </LinkContainer>
                   </td>
                   <td>
-                    <Button variant="danger">delete</Button>
+                    <DeleteButton id={user.id!} />
                   </td>
                 </tr>
               ))}
             </tbody>
           </Table>
-        ) : null}
+        ) : (
+          <Alert variant="info">There are no users</Alert>
+        )}
       </Card.Body>
     </Card>
   );
