@@ -9,4 +9,7 @@ export const userAPI = {
   fetchAll() {
     return axios.get<User[]>(USERS_URL);
   },
+  addOne(user: User) {
+    return axios.post<User>(USERS_URL, user);
+  },
 };

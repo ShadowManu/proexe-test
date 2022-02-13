@@ -1,6 +1,7 @@
 import { isEmpty } from "lodash";
 import { useEffect } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 import styled from "styled-components/macro";
 
 import { useAppDispatch, useAppSelector } from "../core/hooks";
@@ -12,12 +13,11 @@ const StyledRow = styled(Row)`
 
 const UsersList = () => {
   const dispatch = useAppDispatch();
+  const users = useAppSelector(selectors.users.selectAll);
 
   useEffect(() => {
-    dispatch(actions.users.fetchAll());
+    if (isEmpty(users)) dispatch(actions.users.fetchAll());
   }, []);
-
-  const users = useAppSelector(selectors.users.selectAll);
 
   return (
     <Card>
@@ -27,7 +27,9 @@ const UsersList = () => {
             <Card.Title>User list</Card.Title>
           </Col>
           <Col className="ms-auto">
-            <Button variant="primary">Add new</Button>
+            <LinkContainer to="/new">
+              <Button variant="primary">Add new</Button>
+            </LinkContainer>
           </Col>
         </StyledRow>
       </Card.Header>
@@ -53,7 +55,7 @@ const UsersList = () => {
                   <td>{user.name}</td>
                   <td>{user.username}</td>
                   <td>{user.email}</td>
-                  <td>{user.address.city}</td>
+                  <td>{user.address?.city}</td>
                   <td>
                     <Button variant="warning">edit</Button>
                   </td>
