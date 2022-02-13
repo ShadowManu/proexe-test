@@ -1,11 +1,13 @@
 import { superstructResolver } from "@hookform/resolvers/superstruct";
+import { userInfo } from "os";
+import { useEffect } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { LinkContainer } from "react-router-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { nonempty, object, pattern, string } from "superstruct";
-import { useAppDispatch } from "../core/hooks";
-import { actions } from "../core/store";
+import { useAppDispatch, useAppSelector } from "../core/hooks";
+import { actions, selectors } from "../core/store";
 import { User } from "../core/types";
 
 interface FormValue {
@@ -24,23 +26,46 @@ const schema = object({
   email: nonempty(pattern(string(), EMAIL_REGEX)),
 });
 
+const useExistingUser = () => {
+  const { userId } = useParams();
+  return useAppSelector((state) =>
+    userId ? selectors.users.selectById(state, userId) : undefined
+  );
+};
+
 const UsersPost = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  const existingUser = useExistingUser();
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormValue>({
     mode: "onSubmit",
     resolver: superstructResolver(schema),
   });
 
+  // Load form with existing user
+  useEffect(() => {
+    if (!existingUser) return;
+    const { name, email } = existingUser;
+    reset({ name, email });
+  }, [existingUser]);
+
   const onSubmit = async (form: FormValue) => {
     const user: User = form;
 
-    await dispatch(actions.users.addOne(user));
+    if (!existingUser) {
+      await dispatch(actions.users.addOne(user));
+    } else {
+      const id = existingUser.id!;
+      await dispatch(actions.users.updateOne({ id, user }));
+    }
+
     navigate("/");
   };
 

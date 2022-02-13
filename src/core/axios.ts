@@ -12,4 +12,7 @@ export const userAPI = {
   addOne(user: User) {
     return axios.post<User>(USERS_URL, user);
   },
+  updateOne(id: number, user: User) {
+    return axios.patch<User>(`${USERS_URL}/${id}`, user);
+  },
 };

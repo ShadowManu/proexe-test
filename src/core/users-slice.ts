@@ -22,6 +22,14 @@ export const addOne = createAsyncThunk(
   }
 );
 
+export const updateOne = createAsyncThunk(
+  `${SLICE_NAME}/updateOne`,
+  async ({ id, user }: { id: number; user: User }) => {
+    const response = await userAPI.updateOne(id, user);
+    return response.data;
+  }
+);
+
 export const adapter = createEntityAdapter<User>({
   selectId: (user) => user.id ?? user.email,
   sortComparer: false,
@@ -38,8 +46,14 @@ export const slice = createSlice({
       })
       .addCase(addOne.fulfilled, (state, action) => {
         return adapter.addOne(state, action.payload);
+      })
+      .addCase(updateOne.fulfilled, (state, action) => {
+        return adapter.updateOne(state, {
+          id: action.payload.id!,
+          changes: action.payload,
+        });
       });
   },
 });
 
-export const actions = { fetchAll, addOne };
+export const actions = { fetchAll, addOne, updateOne };

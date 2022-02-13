@@ -1,23 +1,17 @@
 import { isEmpty } from "lodash";
-import { useEffect } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import styled from "styled-components/macro";
 
-import { useAppDispatch, useAppSelector } from "../core/hooks";
-import { actions, selectors } from "../core/store";
+import { useAppSelector } from "../core/hooks";
+import { selectors } from "../core/store";
 
 const StyledRow = styled(Row)`
   align-items: center;
 `;
 
 const UsersList = () => {
-  const dispatch = useAppDispatch();
   const users = useAppSelector(selectors.users.selectAll);
-
-  useEffect(() => {
-    if (isEmpty(users)) dispatch(actions.users.fetchAll());
-  }, []);
 
   return (
     <Card>
@@ -50,14 +44,16 @@ const UsersList = () => {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr>
+                <tr key={user.id!}>
                   <td>{user.id}</td>
                   <td>{user.name}</td>
                   <td>{user.username}</td>
                   <td>{user.email}</td>
                   <td>{user.address?.city}</td>
                   <td>
-                    <Button variant="warning">edit</Button>
+                    <LinkContainer to={`/edit/${user.id!}`}>
+                      <Button variant="warning">edit</Button>
+                    </LinkContainer>
                   </td>
                   <td>
                     <Button variant="danger">delete</Button>
